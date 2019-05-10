@@ -13,18 +13,28 @@ namespace Lykke.Common.Postgres
         private readonly string _schema;
         public bool IsTraceEnabled { set; get; }
         
-        // This ctor is used for migrations.
+        /// <summary>
+        /// Constructor used for migrations.
+        /// </summary>
+        /// <param name="schema">The schema which should be used.</param>
         public PostgresContext(string schema)
         {
             _schema = schema;
+            
             IsTraceEnabled = true;
         }
 
-        // For factories etc.
+        /// <summary>
+        /// Constructor used for factories etc.
+        /// </summary>
+        /// <param name="schema">The schema which should be used.</param>
+        /// <param name="connectionString">Connection string to the database.</param>
+        /// <param name="isTraceEnabled">Whether or not display EF logs.</param>
         public PostgresContext(string schema, string connectionString, bool isTraceEnabled)
         {
             _schema = schema;
             _connectionString = connectionString;
+            
             IsTraceEnabled = isTraceEnabled;
         }
         
@@ -35,6 +45,7 @@ namespace Lykke.Common.Postgres
                 optionsBuilder.UseLoggerFactory(new LoggerFactory(new[] {new ConsoleLoggerProvider((_, __) => true, true)}));
             }
             
+            // Manual connection string entry for migrations.
             if (_connectionString == null)
             {
                 Console.Write("Enter connection string: ");
