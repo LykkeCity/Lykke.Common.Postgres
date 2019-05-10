@@ -37,8 +37,10 @@ namespace Lykke.Common.Postgres
             
             IsTraceEnabled = isTraceEnabled;
         }
+
+        protected abstract void OnLykkeConfiguring(DbContextOptionsBuilder optionsBuilder);
         
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected sealed override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (IsTraceEnabled)
             {
@@ -59,11 +61,19 @@ namespace Lykke.Common.Postgres
                     HistoryRepository.DefaultTableName, _schema));
             
             optionsBuilder.ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning));
+
+            OnLykkeConfiguring(optionsBuilder);
+            
+            base.OnConfiguring(optionsBuilder);
         }
         
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected abstract void OnLykkeModelCreating(ModelBuilder modelBuilder);
+        
+        protected sealed override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema(_schema);
+
+            OnLykkeModelCreating(modelBuilder);
             
             base.OnModelCreating(modelBuilder);
         }
