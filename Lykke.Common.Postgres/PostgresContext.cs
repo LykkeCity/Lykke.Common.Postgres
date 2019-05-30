@@ -12,6 +12,8 @@ namespace Lykke.Common.Postgres
         private string _connectionString;
         private readonly string _schema;
         public bool IsTraceEnabled { set; get; }
+
+        private readonly bool _isForMocks;
         
         /// <summary>
         /// Constructor used for migrations.
@@ -22,6 +24,8 @@ namespace Lykke.Common.Postgres
             _schema = schema;
             
             IsTraceEnabled = true;
+            
+            _isForMocks = false;
         }
 
         /// <summary>
@@ -30,7 +34,7 @@ namespace Lykke.Common.Postgres
         /// <param name="contextOptions">Context creation options.</param>
         public PostgresContext(DbContextOptions contextOptions) : base(contextOptions)
         {
-            
+            _isForMocks = true;
         }
 
         /// <summary>
@@ -45,12 +49,17 @@ namespace Lykke.Common.Postgres
             _connectionString = connectionString;
             
             IsTraceEnabled = isTraceEnabled;
+
+            _isForMocks = true;
         }
 
         protected abstract void OnLykkeConfiguring(DbContextOptionsBuilder optionsBuilder);
         
         protected sealed override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (_isForMocks)
+                return;
+            
             if (IsTraceEnabled)
             {
                 optionsBuilder.UseLoggerFactory(new LoggerFactory(new[] {new ConsoleLoggerProvider((_, __) => true, true)}));
@@ -80,6 +89,9 @@ namespace Lykke.Common.Postgres
         
         protected sealed override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            if (_isForMocks)
+                return;
+            
             modelBuilder.HasDefaultSchema(_schema);
 
             OnLykkeModelCreating(modelBuilder);
