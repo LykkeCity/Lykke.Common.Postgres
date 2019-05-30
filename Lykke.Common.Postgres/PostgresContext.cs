@@ -25,6 +25,15 @@ namespace Lykke.Common.Postgres
         }
 
         /// <summary>
+        /// Constructor used for mocks.
+        /// </summary>
+        /// <param name="contextOptions">Context creation options.</param>
+        public PostgresContext(DbContextOptions<DbContext> contextOptions) : base(contextOptions)
+        {
+            
+        }
+
+        /// <summary>
         /// Constructor used for factories etc.
         /// </summary>
         /// <param name="schema">The schema which should be used.</param>
