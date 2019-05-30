@@ -50,7 +50,7 @@ namespace Lykke.Common.Postgres
             
             IsTraceEnabled = isTraceEnabled;
 
-            _isForMocks = true;
+            _isForMocks = false;
         }
 
         protected abstract void OnLykkeConfiguring(DbContextOptionsBuilder optionsBuilder);
